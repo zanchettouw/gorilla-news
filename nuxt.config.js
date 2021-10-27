@@ -2,6 +2,9 @@ const pkg = require('./package')
 
 module.exports = {
   mode: 'spa',
+  target: 'static',
+  ssr: false,
+
 
   /*
   ** Headers of the page
@@ -14,7 +17,8 @@ module.exports = {
       { hid: 'description', name: 'description', content: pkg.description }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'stylesheet', href: '//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons'}
     ]
   },
 
@@ -27,16 +31,15 @@ module.exports = {
   ** Global CSS
   */
   css: [
-    { src: 'vue-material/dist/vue-material.min.css', lang:'css' }
+    { src: 'vue-material/dist/vue-material.min.css', lang:'css' },
+    { src: '~/assets/theme.scss', lang:'scss' }
   ],
 
   /*
   ** Plugins to load before mounting the App
   */
   plugins: [
-    {
-      src: '~/plugins/vue-material'
-    }
+    { src: '~/plugins/vue-material'}
   ],
 
   /*
@@ -44,15 +47,28 @@ module.exports = {
   */
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/proxy'
   ],
   /*
   ** Axios module configuration
   */
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
+    credentials: false,
+    proxy:true
   },
+  proxy: {
+    "/api/": {
+      target: "https://gorillalogic.com/wp-json/wp/v2/",
+      pathRewrite: { "^/api/": "" }
+    },
+    "/register/": {
+      target: "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCq-vskpwqYy8OhLY4DHsH-dLICj5OW9go",
+      pathRewrite: { "^/register/": "" }
+    }
 
+  },
   /*
   ** Build configuration
   */
@@ -63,5 +79,8 @@ module.exports = {
     extend(config, ctx) {
 
     }
+  },
+  generate: {
+    fallback: true
   }
 }
